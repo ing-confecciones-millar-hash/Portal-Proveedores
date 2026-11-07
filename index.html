@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Confecciones Millar — Portal Proveedores</title>
+<style>
+  :root {
+    --azul: #1A3A5C;
+    --azul-medio: #2563A8;
+    --azul-claro: #EBF2FA;
+    --acento: #2563A8;
+    --rojo: #C0392B;
+    --verde: #1A7A4A;
+    --gris: #6B7280;
+    --gris-claro: #F3F6FA;
+    --borde: #D1DCE8;
+    --blanco: #FFFFFF;
+    --texto: #1A2535;
+    --radio: 10px;
+    --sombra: 0 2px 16px rgba(26,58,92,0.10);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--azul-claro);
+    color: var(--texto);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 32px 16px 48px;
+  }
+  .marca {
+    display: flex; flex-direction: column; align-items: center;
+    margin-bottom: 28px;
+  }
+  .marca-logo {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--azul);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .marca-logo svg { width: 32px; height: 32px; }
+  .marca h1 {
+    font-size: 1.25rem; font-weight: 700; color: var(--azul);
+    letter-spacing: 0.01em; text-align: center;
+  }
+  .marca p { font-size: 0.82rem; color: var(--gris); text-align: center; margin-top: 2px; }
+
+  .card {
+    background: var(--blanco);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 32px 28px;
+    width: 100%; max-width: 440px;
+  }
+  .card-titulo {
+    font-size: 1.05rem; font-weight: 700; color: var(--azul);
+    margin-bottom: 6px;
+  }
+  .card-sub {
+    font-size: 0.82rem; color: var(--gris); margin-bottom: 22px;
+  }
+
+  label {
+    display: block; font-size: 0.82rem; font-weight: 600;
+    color: var(--azul); margin-bottom: 5px; margin-top: 14px;
+  }
+  input[type=text], input[type=email], input[type=tel], input[type=password], input[type=number] {
+    width: 100%; padding: 11px 13px; border: 1.5px solid var(--borde);
+    border-radius: 7px; font-size: 0.95rem; color: var(--texto);
+    background: #FAFCFF; outline: none; transition: border 0.18s;
+  }
+  input:focus { border-color: var(--azul-medio); background: #fff; }
+  input[readonly] { background: var(--gris-claro); color: var(--gris); }
+
+  .btn {
+    display: block; width: 100%; padding: 13px;
+    background: var(--azul); color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    margin-top: 22px; letter-spacing: 0.01em;
+    transition: background 0.18s;
+  }
+  .btn:hover { background: var(--azul-medio); }
+  .btn-sec {
+    background: transparent; color: var(--azul-medio);
+    border: 1.5px solid var(--azul-medio);
+    font-size: 0.9rem; font-weight: 600;
+    padding: 10px; margin-top: 10px;
+  }
+  .btn-sec:hover { background: var(--azul-claro); }
+  .btn-verde { background: var(--verde); }
+  .btn-verde:hover { background: #145E38; }
+
+  .alerta {
+    padding: 11px 14px; border-radius: 7px; font-size: 0.84rem;
+    margin-top: 14px; display: none;
+  }
+  .alerta.error { background: #FDECEA; color: var(--rojo); border-left: 4px solid var(--rojo); }
+  .alerta.ok { background: #E6F4EC; color: var(--verde); border-left: 4px solid var(--verde); }
+  .alerta.info { background: #EBF2FA; color: var(--azul); border-left: 4px solid var(--azul); }
+
+  .intento-bar {
+    display: flex; gap: 6px; margin-top: 10px; justify-content: center;
+  }
+  .intento-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--borde); transition: background 0.2s;
+  }
+  .intento-dot.usado { background: var(--rojo); }
+
+  .link-olvidaste {
+    text-align: center; margin-top: 14px;
+    font-size: 0.82rem; color: var(--azul-medio);
+    cursor: pointer; text-decoration: underline;
+  }
+
+  /* Portal proveedor */
+  .paso {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 0; border-bottom: 1px solid var(--borde);
+  }
+  .paso:last-child { border-bottom: none; }
+  .paso-num {
+    min-width: 32px; height: 32px; border-radius: 50%;
+    background: var(--azul); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; font-weight: 700; flex-shrink: 0;
+  }
+  .paso-info h3 { font-size: 0.95rem; font-weight: 700; color: var(--azul); margin-bottom: 4px; }
+  .paso-info p { font-size: 0.82rem; color: var(--gris); line-height: 1.5; }
+
+  .file-drop {
+    border: 2px dashed var(--borde); border-radius: 8px;
+    padding: 20px; text-align: center; cursor: pointer;
+    background: var(--gris-claro); margin-top: 10px;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .file-drop:hover, .file-drop.activo { border-color: var(--azul-medio); background: var(--azul-claro); }
+  .file-drop p { font-size: 0.84rem; color: var(--gris); margin-top: 6px; }
+  .file-drop input[type=file] { display: none; }
+  .file-nombre { font-size: 0.82rem; color: var(--verde); margin-top: 8px; font-weight: 600; }
+
+  .constancia-box {
+    background: var(--azul-claro); border-radius: 8px;
+    padding: 20px; text-align: center; border: 2px solid var(--azul);
+    margin-top: 18px;
+  }
+  .constancia-box .num { font-size: 1.5rem; font-weight: 800; color: var(--azul); letter-spacing: 0.08em; }
+  .constancia-box p { font-size: 0.82rem; color: var(--gris); margin-top: 6px; }
+
+  /* Admin */
+  .admin-seccion { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--borde); }
+  .admin-seccion h3 { font-size: 0.9rem; font-weight: 700; color: var(--azul); margin-bottom: 10px; }
+  .correo-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .correo-row input { flex: 1; }
+  .correo-idx { font-size: 0.78rem; color: var(--gris); font-weight: 700; min-width: 20px; }
+  .input-ojo { position: relative; }
+  .input-ojo input { padding-right: 40px; }
+  .btn-ojo {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--gris);
+    font-size: 1rem; padding: 2px; line-height: 1;
+  }
+
+  .tabla-prov { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 10px; }
+  .tabla-prov th { background: var(--azul); color: #fff; padding: 7px 8px; text-align: left; }
+  .tabla-prov td { padding: 6px 8px; border-bottom: 1px solid var(--borde); }
+  .tabla-prov tr:hover td { background: var(--azul-claro); }
+
+  .pie {
+    text-align: center; font-size: 0.75rem; color: var(--gris);
+    margin-top: 28px;
+  }
+  .admin-link { font-size: 0.72rem; color: var(--borde); cursor: pointer; margin-top: 18px; display: block; text-align: center; }
+
+  /* MODAL DEMO CORREO */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(26,58,92,0.45); z-index: 1000;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-overlay.activo { display: flex; }
+  .modal {
+    background: #fff; border-radius: 12px; padding: 28px 24px;
+    width: 100%; max-width: 420px; box-shadow: 0 8px 40px rgba(26,58,92,0.18);
+    animation: popIn 0.22s ease;
+  }
+  @keyframes popIn { from { transform: scale(0.92); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .modal-titulo { font-size: 1rem; font-weight: 700; color: var(--azul); margin-bottom: 16px; }
+  .correo-preview {
+    background: var(--gris-claro); border-radius: 8px;
+    border: 1px solid var(--borde); padding: 16px; font-size: 0.82rem;
+    color: var(--texto); line-height: 1.6;
+  }
+  .correo-preview .campo { color: var(--gris); font-size: 0.75rem; margin-bottom: 2px; }
+  .correo-preview .valor { font-weight: 600; margin-bottom: 10px; }
+  .correo-preview hr { border: none; border-top: 1px solid var(--borde); margin: 10px 0; }
+  .spinner {
+    display: inline-block; width: 20px; height: 20px;
+    border: 3px solid var(--borde); border-top-color: var(--azul);
+    border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .enviando-txt { font-size: 0.9rem; color: var(--azul); margin-left: 10px; vertical-align: middle; }
+  .demo-badge {
+    display: inline-block; background: #FFF3CD; color: #856404;
+    border: 1px solid #FFEAA7; border-radius: 4px;
+    font-size: 0.72rem; font-weight: 700; padding: 2px 8px; margin-bottom: 14px;
+  }
+  .admin-link:hover { color: var(--gris); }
+
+  /* Ocultar vistas */
+  .vista { display: none; }
+  .vista.activa { display: block; }
+
+  @media(max-width:480px) {
+    .card { padding: 22px 14px; }
+    body { padding: 18px 8px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="marca">
+  <div class="marca-logo">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="24" height="16" rx="3" fill="white" opacity="0.15"/>
+      <path d="M6 14 L16 8 L26 14 L26 24 L6 24 Z" fill="white" opacity="0.25"/>
+      <path d="M12 24 L12 18 Q16 15 20 18 L20 24" fill="white"/>
+      <circle cx="16" cy="13" r="3" fill="white" opacity="0.8"/>
+    </svg>
+  </div>
+  <h1>Confecciones Millar</h1>
+  <p>Portal de Proveedores</p>
+</div>
+
+<!-- ====== VISTA 1: NIT ====== -->
+<div class="card vista activa" id="v-nit">
+  <div class="card-titulo">Ingrese su NIT</div>
+  <div class="card-sub">Sin dígito de verificación</div>
+  <label for="nit-input">NIT de la empresa</label>
+  <input type="text" id="nit-input" placeholder="Ej: 900123456" maxlength="15" inputmode="numeric">
+  <div class="alerta error" id="nit-err"></div>
+  <button class="btn" onclick="verificarNit()">Continuar</button>
+  <span class="admin-link" onclick="irAdmin()">Administrador</span>
+</div>
+
+<!-- ====== VISTA 2: REGISTRO ====== -->
+<div class="card vista" id="v-registro">
+  <div class="card-titulo">Registro de proveedor</div>
+  <div class="card-sub">Complete los datos de su empresa para continuar.</div>
+  <label>NIT</label>
+  <input type="text" id="reg-nit" readonly>
+  <label>Razón social</label>
+  <input type="text" id="reg-razon" placeholder="Nombre de la empresa">
+  <label>Nombre del contacto</label>
+  <input type="text" id="reg-contacto" placeholder="Nombre completo">
+  <label>Responsable de entrega</label>
+  <input type="text" id="reg-responsable" placeholder="Nombre del responsable">
+  <label>Teléfono / Celular</label>
+  <input type="tel" id="reg-telefono" placeholder="Ej: 3001234567" inputmode="numeric">
+  <label>Correo electrónico</label>
+  <input type="email" id="reg-correo" placeholder="correo@empresa.com">
+  <label>Clave de acceso (máx. 6 dígitos)</label>
+  <div class="input-ojo">
+    <input type="password" id="reg-clave" placeholder="••••••" maxlength="6" inputmode="numeric">
+    <button type="button" class="btn-ojo" onclick="toggleOjo('reg-clave',this)" tabindex="-1">👁</button>
+  </div>
+  <label>Confirmar clave</label>
+  <div class="input-ojo">
+    <input type="password" id="reg-clave2" placeholder="••••••" maxlength="6" inputmode="numeric">
+    <button type="button" class="btn-ojo" onclick="toggleOjo('reg-clave2',this)" tabindex="-1">👁</button>
+  </div>
+  <div class="alerta error" id="reg-err"></div>
+  <button class="btn" onclick="registrar()">Crear cuenta</button>
+  <button class="btn btn-sec" onclick="irVista('v-nit')">← Volver</button>
+</div>
+
+<!-- ====== VISTA 3: LOGIN ====== -->
+<div class="card vista" id="v-login">
+  <div class="card-titulo" id="login-saludo">Bienvenido</div>
+  <div class="card-sub">Ingrese su clave para continuar</div>
+  <label>Clave (máx. 6 dígitos)</label>
+  <div class="input-ojo">
+    <input type="password" id="login-clave" placeholder="••••••" maxlength="6" inputmode="numeric"
+           onkeydown="if(event.key==='Enter') loginIngresar()">
+    <button type="button" class="btn-ojo" onclick="toggleOjo('login-clave',this)" tabindex="-1">👁</button>
+  </div>
+  <div class="intento-bar" id="intentos-bar">
+    <div class="intento-dot" id="d1"></div>
+    <div class="intento-dot" id="d2"></div>
+    <div class="intento-dot" id="d3"></div>
+    <div class="intento-dot" id="d4"></div>
+    <div class="intento-dot" id="d5"></div>
+  </div>
+  <div class="alerta error" id="login-err"></div>
+  <button class="btn" onclick="loginIngresar()">Ingresar</button>
+  <div class="link-olvidaste" onclick="olvideClave()" id="link-olvide" style="display:none">¿Olvidó su clave? Enviar al correo registrado</div>
+  <button class="btn btn-sec" onclick="irVista('v-nit')" style="margin-top:14px">← Volver</button>
+</div>
+
+<!-- ====== VISTA 4: PORTAL PROVEEDOR ====== -->
+<div class="card vista" id="v-portal">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div>
+      <div class="card-titulo" id="portal-saludo">Portal de entregas</div>
+      <div class="card-sub" id="portal-nit-txt"></div>
+    </div>
+    <button onclick="cerrarSesion()" style="font-size:0.78rem;color:var(--gris);background:none;border:1px solid var(--borde);border-radius:6px;padding:5px 10px;cursor:pointer">Salir</button>
+  </div>
+
+  <div class="paso">
+    <div class="paso-num">1</div>
+    <div class="paso-info">
+      <h3>Descargue la plantilla</h3>
+      <p>Descargue el formato oficial, diligéncielo completamente y guárdelo antes de continuar.</p>
+      <button class="btn btn-sec" onclick="descargarPlantilla()" style="margin-top:10px;width:auto;padding:9px 18px">⬇ Descargar plantilla Excel</button>
+    </div>
+  </div>
+
+  <div class="paso">
+    <div class="paso-num">2</div>
+    <div class="paso-info">
+      <h3>Adjunte la plantilla diligenciada</h3>
+      <p>El archivo debe tener Ancho (cm) y al menos Metros o Peso (kg). Si solo reporta Peso, el campo Rendimiento es obligatorio.</p>
+      <div class="file-drop" id="drop-zona" onclick="document.getElementById('file-input').click()"
+           ondragover="event.preventDefault();this.classList.add('activo')"
+           ondragleave="this.classList.remove('activo')"
+           ondrop="onDrop(event)">
+        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#2563A8" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+        </svg>
+        <p>Haga clic o arrastre el archivo aquí</p>
+        <p style="font-size:0.76rem;margin-top:2px;">Solo archivos .xlsx</p>
+        <div class="file-nombre" id="file-nombre"></div>
+        <input type="file" id="file-input" accept=".xlsx" onchange="onFileSelect(this)">
+      </div>
+      <div class="alerta error" id="val-err"></div>
+      <div class="alerta info" id="val-info"></div>
+    </div>
+  </div>
+
+  <button class="btn btn-verde" onclick="enviarLista()">Enviar lista de chequeo</button>
+
+  <div class="constancia-box" id="constancia-box" style="display:none">
+    <div style="font-size:0.82rem;color:var(--gris);margin-bottom:4px">Lista enviada exitosamente ✓</div>
+    <div class="num" id="constancia-num"></div>
+    <p>Guarde este número de constancia. El responsable de agendamiento se comunicará con usted.</p>
+  </div>
+</div>
+
+<!-- ====== VISTA 5: ADMIN ====== -->
+<div class="card vista" id="v-admin">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div class="card-titulo">Panel Administrador</div>
+    <button onclick="irVista('v-nit')" style="font-size:0.78rem;color:var(--gris);background:none;border:1px solid var(--borde);border-radius:6px;padding:5px 10px;cursor:pointer">Salir</button>
+  </div>
+
+  <div class="admin-seccion">
+    <h3>📧 Correos destinatarios (máx. 3)</h3>
+    <div class="correo-row"><span class="correo-idx">1</span><input type="email" id="admin-c1" placeholder="correo1@millar.com"></div>
+    <div class="correo-row"><span class="correo-idx">2</span><input type="email" id="admin-c2" placeholder="correo2@millar.com"></div>
+    <div class="correo-row"><span class="correo-idx">3</span><input type="email" id="admin-c3" placeholder="correo3@millar.com"></div>
+    <div class="alerta ok" id="admin-ok"></div>
+    <button class="btn" onclick="guardarCorreos()" style="margin-top:12px">Guardar correos</button>
+  </div>
+
+  <div class="admin-seccion">
+    <h3>📋 Historial de proveedores registrados</h3>
+    <div id="tabla-prov-wrap" style="overflow-x:auto; max-height:260px; overflow-y:auto;"></div>
+    <button class="btn btn-sec" onclick="descargarHistorial()" style="margin-top:12px">⬇ Descargar historial en Excel</button>
+  </div>
+</div>
+
+<!-- ====== VISTA: ADMIN LOGIN ====== -->
+<div class="card vista" id="v-admin-login">
+  <div class="card-titulo">Acceso Administrador</div>
+  <div class="card-sub">Ingrese la clave maestra</div>
+  <label>Clave maestra</label>
+  <div class="input-ojo">
+    <input type="password" id="admin-clave" placeholder="••••••" maxlength="20"
+           onkeydown="if(event.key==='Enter') adminLogin()">
+    <button type="button" class="btn-ojo" onclick="toggleOjo('admin-clave',this)" tabindex="-1">👁</button>
+  </div>
+  <div class="alerta error" id="admin-login-err"></div>
+  <button class="btn" onclick="adminLogin()">Ingresar</button>
+  <button class="btn btn-sec" onclick="irVista('v-nit')">← Volver</button>
+</div>
+
+<div class="pie">Confecciones Millar &nbsp;·&nbsp; Portal de Proveedores</div>
+
+<!-- MODAL DEMO CORREO -->
+<div class="modal-overlay" id="modal-correo">
+  <div class="modal">
+    <div class="demo-badge">⚠ MODO DEMO — El correo no se envía realmente</div>
+    <div id="modal-enviando" style="text-align:center;padding:20px 0">
+      <div class="spinner"></div>
+      <span class="enviando-txt">Enviando correo...</span>
+    </div>
+    <div id="modal-resultado" style="display:none">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:2.2rem">✅</div>
+        <div style="font-weight:700;color:var(--verde);font-size:1rem;margin-top:6px">Correo enviado exitosamente</div>
+      </div>
+      <div class="modal-titulo">Vista previa del correo enviado</div>
+      <div class="correo-preview">
+        <div class="campo">Para:</div>
+        <div class="valor" id="prev-para"></div>
+        <div class="campo">Asunto:</div>
+        <div class="valor" id="prev-asunto"></div>
+        <hr>
+        <div id="prev-cuerpo"></div>
+      </div>
+      <button class="btn" onclick="cerrarModal()" style="margin-top:18px">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SheetJS para leer y generar Excel ===== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+// =========================================================
+//  BASE DE DATOS LOCAL (localStorage)
+// =========================================================
+const DB = {
+  get proveedores() { try { return JSON.parse(localStorage.getItem('millar_prov') || '{}'); } catch(e){return{};} },
+  set proveedores(v) { localStorage.setItem('millar_prov', JSON.stringify(v)); },
+  get correos() { try { return JSON.parse(localStorage.getItem('millar_correos') || '["","",""]'); } catch(e){return["","",""]; } },
+  set correos(v) { localStorage.setItem('millar_correos', JSON.stringify(v)); },
+  get consecutivo() { 
+    const hoy = fechaHoy();
+    const key = 'millar_consec_' + hoy;
+    return parseInt(localStorage.getItem(key) || '0');
+  },
+  incConsecutivo() {
+    const hoy = fechaHoy();
+    const key = 'millar_consec_' + hoy;
+    const n = (parseInt(localStorage.getItem(key) || '0')) + 1;
+    localStorage.setItem(key, n);
+    return n;
+  }
+};
+
+const ADMIN_CLAVE = 'MILLAR24';
+
+function toggleOjo(id, btn) {
+  const inp = document.getElementById(id);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+let nitActual = '';
+let intentos = 0;
+let archivoSeleccionado = null;
+let workbookActual = null;
+
+// =========================================================
+//  UTILIDADES
+// =========================================================
+function fechaHoy() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${y}${m}${dd}`;
+}
+function irVista(id) {
+  document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
+  document.getElementById(id).classList.add('activa');
+}
+function mostrarAlerta(id, msg, tipo) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'alerta ' + tipo;
+  el.style.display = 'block';
+}
+function ocultarAlerta(id) {
+  const el = document.getElementById(id);
+  el.style.display = 'none';
+}
+
+// =========================================================
+//  VISTA 1 — VERIFICAR NIT
+// =========================================================
+function verificarNit() {
+  const nit = document.getElementById('nit-input').value.trim().replace(/\D/g,'');
+  ocultarAlerta('nit-err');
+  if (!nit || nit.length < 6) {
+    mostrarAlerta('nit-err', 'Ingrese un NIT válido (mínimo 6 dígitos).', 'error');
+    return;
+  }
+  nitActual = nit;
+  const provs = DB.proveedores;
+  if (provs[nit]) {
+    // Ya existe → login
+    const prov = provs[nit];
+    if (prov.bloqueado) {
+      irVista('v-login');
+      actualizarBarra(5);
+      mostrarAlerta('login-err', 'Cuenta bloqueada. Use la opción "¿Olvidó su clave?" para recuperar acceso.', 'error');
+      document.getElementById('link-olvide').style.display = 'block';
+      return;
+    }
+    document.getElementById('login-saludo').textContent = prov.razon || 'Bienvenido';
+    intentos = prov.intentos || 0;
+    actualizarBarra(intentos);
+    ocultarAlerta('login-err');
+    document.getElementById('login-clave').value = '';
+    if (intentos >= 1) document.getElementById('link-olvide').style.display = 'block';
+    irVista('v-login');
+  } else {
+    // Nuevo → registro
+    document.getElementById('reg-nit').value = nit;
+    ['reg-razon','reg-contacto','reg-responsable','reg-telefono','reg-correo','reg-clave','reg-clave2'].forEach(id => document.getElementById(id).value = '');
+    ocultarAlerta('reg-err');
+    irVista('v-registro');
+  }
+}
+
+// =========================================================
+//  VISTA 2 — REGISTRO
+// =========================================================
+function registrar() {
+  ocultarAlerta('reg-err');
+  const campos = {
+    razon: document.getElementById('reg-razon').value.trim(),
+    contacto: document.getElementById('reg-contacto').value.trim(),
+    responsable: document.getElementById('reg-responsable').value.trim(),
+    telefono: document.getElementById('reg-telefono').value.trim(),
+    correo: document.getElementById('reg-correo').value.trim(),
+    clave: document.getElementById('reg-clave').value.trim(),
+    clave2: document.getElementById('reg-clave2').value.trim(),
+  };
+  if (!campos.razon || !campos.contacto || !campos.responsable || !campos.telefono || !campos.correo || !campos.clave) {
+    mostrarAlerta('reg-err', 'Todos los campos son obligatorios.', 'error');
+    return;
+  }
+  if (!/^\S+@\S+\.\S+$/.test(campos.correo)) {
+    mostrarAlerta('reg-err', 'El correo electrónico no es válido.', 'error');
+    return;
+  }
+  if (!/^\d{1,6}$/.test(campos.clave)) {
+    mostrarAlerta('reg-err', 'La clave debe ser numérica, máximo 6 dígitos.', 'error');
+    return;
+  }
+  if (campos.clave !== campos.clave2) {
+    mostrarAlerta('reg-err', 'Las claves no coinciden.', 'error');
+    return;
+  }
+  const provs = DB.proveedores;
+  provs[nitActual] = {
+    nit: nitActual, razon: campos.razon, contacto: campos.contacto,
+    responsable: campos.responsable, telefono: campos.telefono,
+    correo: campos.correo, clave: campos.clave,
+    fechaRegistro: new Date().toISOString(), intentos: 0, bloqueado: false
+  };
+  DB.proveedores = provs;
+  entrarPortal();
+}
+
+// =========================================================
+//  VISTA 3 — LOGIN
+// =========================================================
+function actualizarBarra(n) {
+  for (let i = 1; i <= 5; i++) {
+    const d = document.getElementById('d'+i);
+    d.className = 'intento-dot' + (i <= n ? ' usado' : '');
+  }
+}
+function loginIngresar() {
+  ocultarAlerta('login-err');
+  const clave = document.getElementById('login-clave').value.trim();
+  const provs = DB.proveedores;
+  const prov = provs[nitActual];
+  if (!prov) { irVista('v-nit'); return; }
+  if (prov.bloqueado) {
+    mostrarAlerta('login-err', 'Cuenta bloqueada. Use la opción "¿Olvidó su clave?" para recuperar acceso.', 'error');
+    document.getElementById('link-olvide').style.display = 'block';
+    return;
+  }
+  if (clave === prov.clave) {
+    prov.intentos = 0;
+    DB.proveedores = provs;
+    entrarPortal();
+  } else {
+    prov.intentos = (prov.intentos || 0) + 1;
+    intentos = prov.intentos;
+    actualizarBarra(intentos);
+    if (intentos >= 5) {
+      prov.bloqueado = true;
+      DB.proveedores = provs;
+      mostrarAlerta('login-err', 'Cuenta bloqueada por 5 intentos fallidos. Use "¿Olvidó su clave?" para recuperar acceso.', 'error');
+      document.getElementById('link-olvide').style.display = 'block';
+    } else {
+      DB.proveedores = provs;
+      const restantes = 5 - intentos;
+      mostrarAlerta('login-err', `Clave incorrecta. Le quedan ${restantes} intento${restantes===1?'':'s'}.`, 'error');
+      if (intentos >= 1) document.getElementById('link-olvide').style.display = 'block';
+    }
+    document.getElementById('login-clave').value = '';
+  }
+}
+function olvideClave() {
+  const provs = DB.proveedores;
+  const prov = provs[nitActual];
+  if (!prov) return;
+  // Desbloquear y simular envío de correo
+  prov.bloqueado = false;
+  prov.intentos = 0;
+  DB.proveedores = provs;
+  actualizarBarra(0);
+  mostrarAlerta('login-err',
+    `Se ha enviado su clave al correo ${prov.correo}. Intente nuevamente.`, 'info');
+  document.getElementById('link-olvide').style.display = 'none';
+  document.getElementById('login-clave').value = '';
+}
+
+// =========================================================
+//  PORTAL PROVEEDOR
+// =========================================================
+function entrarPortal() {
+  const prov = DB.proveedores[nitActual];
+  document.getElementById('portal-saludo').textContent = 'Hola, ' + (prov.razon || 'Proveedor');
+  document.getElementById('portal-nit-txt').textContent = 'NIT: ' + nitActual;
+  archivoSeleccionado = null; workbookActual = null;
+  document.getElementById('file-nombre').textContent = '';
+  ocultarAlerta('val-err'); ocultarAlerta('val-info');
+  document.getElementById('constancia-box').style.display = 'none';
+  irVista('v-portal');
+}
+function cerrarSesion() { nitActual = ''; document.getElementById('nit-input').value = ''; irVista('v-nit'); }
+
+// =========================================================
+//  DESCARGA DE PLANTILLA (base64 embebido)
+// =========================================================
+const PLANTILLA_B64 = "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";
+
+function descargarPlantilla() {
+  const bin = atob(PLANTILLA_B64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const blob = new Blob([bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'LISTA_CHEQUEO_MILLAR.xlsx';
+  a.click();
+}
+
+// =========================================================
+//  MANEJO DE ARCHIVO
+// =========================================================
+function onFileSelect(input) {
+  if (input.files && input.files[0]) procesarArchivo(input.files[0]);
+}
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zona').classList.remove('activo');
+  const f = e.dataTransfer.files[0];
+  if (f) procesarArchivo(f);
+}
+function procesarArchivo(file) {
+  ocultarAlerta('val-err'); ocultarAlerta('val-info');
+  document.getElementById('constancia-box').style.display = 'none';
+  if (!file.name.endsWith('.xlsx')) {
+    mostrarAlerta('val-err', 'Solo se aceptan archivos .xlsx', 'error');
+    return;
+  }
+  archivoSeleccionado = file;
+  document.getElementById('file-nombre').textContent = '📄 ' + file.name;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      workbookActual = XLSX.read(e.target.result, {type:'array'});
+      mostrarAlerta('val-info', 'Archivo cargado. Presione "Enviar lista de chequeo" para validar y enviar.', 'info');
+    } catch(err) {
+      mostrarAlerta('val-err', 'No se pudo leer el archivo. Verifique que sea un Excel válido.', 'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// =========================================================
+//  VALIDACIÓN DEL EXCEL
+// =========================================================
+function validarExcel(wb) {
+  const wsName = wb.SheetNames[0];
+  const ws = wb.Sheets[wsName];
+  const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+  
+  // Encontrar fila de headers (busca "Fecha" en alguna columna)
+  let headerRow = -1;
+  let headers = [];
+  for (let r = 0; r < data.length; r++) {
+    const row = data[r];
+    const idx = row.findIndex(c => String(c).trim().toLowerCase() === 'fecha');
+    if (idx >= 0) { headerRow = r; headers = row; break; }
+  }
+  if (headerRow < 0) return { ok: false, msg: 'No se encontró la fila de encabezados en el archivo. Verifique que esté usando la plantilla oficial de Confecciones Millar.' };
+
+  const colIdx = {};
+  headers.forEach((h, i) => { colIdx[String(h).trim().toLowerCase().replace(/\s*\(.*\)/,'')] = i; });
+
+  const iAncho = colIdx['ancho'] ?? -1;
+  const iMetros = colIdx['metros'] ?? -1;
+  const iPeso = colIdx['peso'] ?? -1;
+  const iRend = colIdx['rendimiento'] ?? -1;
+
+  if (iAncho < 0) return { ok:false, msg:'No se encontró la columna Ancho (cm) en el archivo.' };
+
+  const filas = data.slice(headerRow + 1).filter(r => r.some(c => c !== ''));
+  if (filas.length === 0) return { ok:false, msg:'El archivo no contiene filas de datos. Diligencie al menos un rollo.' };
+
+  const errores = [];
+  filas.forEach((fila, i) => {
+    const nFila = i + 1;
+    const ancho = iAncho >= 0 ? String(fila[iAncho]).trim() : '';
+    const metros = iMetros >= 0 ? String(fila[iMetros]).trim() : '';
+    const peso = iPeso >= 0 ? String(fila[iPeso]).trim() : '';
+    const rend = iRend >= 0 ? String(fila[iRend]).trim() : '';
+
+    if (!ancho || ancho === '') errores.push(`Fila ${nFila}: falta Ancho (cm) — campo obligatorio.`);
+    const tieneMetros = metros !== '' && metros !== '0';
+    const tienePeso = peso !== '' && peso !== '0';
+    if (!tieneMetros && !tienePeso) errores.push(`Fila ${nFila}: debe ingresar al menos Metros o Peso (kg).`);
+    if (!tieneMetros && tienePeso && (!rend || rend === '' || rend === '0'))
+      errores.push(`Fila ${nFila}: si solo reporta Peso (kg), el campo Rendimiento es obligatorio.`);
+  });
+
+  if (errores.length > 0) return { ok:false, msg: 'Se encontraron los siguientes errores:\n• ' + errores.join('\n• ') };
+  return { ok:true, filas };
+}
+
+// =========================================================
+//  ENVIAR LISTA
+// =========================================================
+function enviarLista() {
+  ocultarAlerta('val-err'); ocultarAlerta('val-info');
+  document.getElementById('constancia-box').style.display = 'none';
+
+  if (!workbookActual) {
+    mostrarAlerta('val-err', 'Seleccione el archivo Excel antes de enviar.', 'error');
+    return;
+  }
+  const resultado = validarExcel(workbookActual);
+  if (!resultado.ok) {
+    mostrarAlerta('val-err', resultado.msg, 'error');
+    return;
+  }
+
+  // Generar número de constancia
+  const n = DB.incConsecutivo();
+  const constancia = fechaHoy() + '-' + String(n).padStart(4,'0');
+
+  // Guardar en historial de envíos
+  const prov = DB.proveedores[nitActual];
+  const envios = JSON.parse(localStorage.getItem('millar_envios') || '[]');
+  envios.push({
+    constancia, nit: nitActual, razon: prov?.razon || '',
+    archivo: archivoSeleccionado?.name || '',
+    fecha: new Date().toISOString()
+  });
+  localStorage.setItem('millar_envios', JSON.stringify(envios));
+
+  // Mostrar modal demo de correo
+  const correos = DB.correos.filter(c => c.trim() !== '');
+  const para = correos.length > 0 ? correos.join(', ') : '(Sin correos configurados — configure en Panel Admin)';
+  const archivo = archivoSeleccionado?.name || 'Lista_Chequeo.xlsx';
+  const fecha = new Date().toLocaleDateString('es-CO', {day:'2-digit', month:'long', year:'numeric'});
+
+  document.getElementById('prev-para').textContent = para;
+  document.getElementById('prev-asunto').textContent = `Lista de Chequeo — ${prov?.razon || nitActual} — Constancia ${constancia}`;
+  document.getElementById('prev-cuerpo').innerHTML = `
+    <b>Estimado equipo de Recibo de Mercancía,</b><br><br>
+    El proveedor <b>${prov?.razon || ''}</b> (NIT: <b>${nitActual}</b>) ha enviado su lista de chequeo para programación de cita de entrega.<br><br>
+    <div class="campo">Fecha de envío:</div><div class="valor">${fecha}</div>
+    <div class="campo">Número de constancia:</div><div class="valor">${constancia}</div>
+    <div class="campo">Archivo adjunto:</div><div class="valor">📎 ${archivo}</div>
+    <div class="campo">Contacto proveedor:</div><div class="valor">${prov?.contacto || ''} — ${prov?.telefono || ''}</div>
+    <div class="campo">Correo proveedor:</div><div class="valor">${prov?.correo || ''}</div>
+    <br><i style="color:var(--gris);font-size:0.78rem">Por favor asigne la cita de entrega y comuníquese con el proveedor.</i>
+  `;
+
+  // Mostrar modal con spinner luego resultado
+  document.getElementById('modal-enviando').style.display = 'block';
+  document.getElementById('modal-resultado').style.display = 'none';
+  document.getElementById('modal-correo').classList.add('activo');
+
+  setTimeout(() => {
+    document.getElementById('modal-enviando').style.display = 'none';
+    document.getElementById('modal-resultado').style.display = 'block';
+  }, 2000);
+
+  // Mostrar constancia debajo
+  document.getElementById('constancia-num').textContent = constancia;
+  document.getElementById('constancia-box').style.display = 'block';
+  archivoSeleccionado = null; workbookActual = null;
+  document.getElementById('file-nombre').textContent = '';
+}
+
+function cerrarModal() {
+  document.getElementById('modal-correo').classList.remove('activo');
+}
+
+// =========================================================
+//  ADMIN
+// =========================================================
+function irAdmin() { irVista('v-admin-login'); }
+function adminLogin() {
+  const c = document.getElementById('admin-clave').value.trim();
+  ocultarAlerta('admin-login-err');
+  if (c === ADMIN_CLAVE) {
+    document.getElementById('admin-clave').value = '';
+    cargarAdmin();
+    irVista('v-admin');
+  } else {
+    mostrarAlerta('admin-login-err', 'Clave incorrecta.', 'error');
+  }
+}
+function cargarAdmin() {
+  const correos = DB.correos;
+  document.getElementById('admin-c1').value = correos[0] || '';
+  document.getElementById('admin-c2').value = correos[1] || '';
+  document.getElementById('admin-c3').value = correos[2] || '';
+  renderTablaProveedores();
+}
+function guardarCorreos() {
+  const c = [
+    document.getElementById('admin-c1').value.trim(),
+    document.getElementById('admin-c2').value.trim(),
+    document.getElementById('admin-c3').value.trim(),
+  ];
+  DB.correos = c;
+  mostrarAlerta('admin-ok', 'Correos guardados correctamente.', 'ok');
+  document.getElementById('admin-ok').style.display = 'block';
+  setTimeout(() => ocultarAlerta('admin-ok'), 3000);
+}
+function renderTablaProveedores() {
+  const provs = DB.proveedores;
+  const wrap = document.getElementById('tabla-prov-wrap');
+  const lista = Object.values(provs);
+  if (lista.length === 0) { wrap.innerHTML = '<p style="font-size:0.82rem;color:var(--gris);padding:10px 0">No hay proveedores registrados aún.</p>'; return; }
+  let html = '<table class="tabla-prov"><thead><tr><th>NIT</th><th>Razón social</th><th>Contacto</th><th>Teléfono</th><th>Correo</th><th>Estado</th></tr></thead><tbody>';
+  lista.forEach(p => {
+    const estado = p.bloqueado ? '<span style="color:var(--rojo);font-weight:700">Bloqueado</span>' : '<span style="color:var(--verde)">Activo</span>';
+    html += `<tr><td>${p.nit}</td><td>${p.razon}</td><td>${p.contacto}</td><td>${p.telefono}</td><td>${p.correo}</td><td>${estado}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+function descargarHistorial() {
+  const provs = Object.values(DB.proveedores);
+  const filas = provs.map(p => ({
+    NIT: p.nit, 'Razón Social': p.razon, Contacto: p.contacto,
+    Responsable: p.responsable, Teléfono: p.telefono, Correo: p.correo,
+    'Fecha Registro': p.fechaRegistro ? new Date(p.fechaRegistro).toLocaleDateString('es-CO') : '',
+    Estado: p.bloqueado ? 'Bloqueado' : 'Activo'
+  }));
+  const ws = XLSX.utils.json_to_sheet(filas);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Proveedores');
+  XLSX.writeFile(wb, 'HISTORIAL_PROVEEDORES_MILLAR.xlsx');
+}
+</script>
+</body>
+</html>
